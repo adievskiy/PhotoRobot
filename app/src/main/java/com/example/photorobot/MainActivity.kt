@@ -2,14 +2,15 @@ package com.example.photorobot
 
 import android.annotation.SuppressLint
 import android.os.Bundle
-import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
@@ -36,7 +37,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 
@@ -49,7 +49,6 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun PhotoRobot() {
@@ -85,12 +84,23 @@ fun PhotoRobot() {
     val lipsState = remember { mutableStateOf(lips[0]) }
 
     Scaffold(
-        topBar = { TopBar() }
+        topBar = {
+            TopBar {
+                faceState.value = face[0]
+                hairState.value = hair[0]
+                eyesState.value = eyes[0]
+                noseState.value = nose[0]
+                lipsState.value = lips[0]
+            }
+        }
     ) { innerPadding ->
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.fillMaxSize().padding(innerPadding).padding(8.dp)
-            ) {
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
+                .padding(8.dp)
+        ) {
             Box {
                 Image(
                     painter = painterResource(R.drawable.base),
@@ -123,10 +133,15 @@ fun PhotoRobot() {
                     modifier = Modifier.size(250.dp)
                 )
             }
+            Spacer(Modifier.height(15.dp))
             DDMenu(face, faceState)
+            Spacer(Modifier.height(5.dp))
             DDMenu(hair, hairState)
+            Spacer(Modifier.height(5.dp))
             DDMenu(eyes, eyesState)
+            Spacer(Modifier.height(5.dp))
             DDMenu(nose, noseState)
+            Spacer(Modifier.height(5.dp))
             DDMenu(lips, lipsState)
         }
     }
@@ -135,7 +150,7 @@ fun PhotoRobot() {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DDMenu(list: List<Portrait>, listState: MutableState<Portrait>) {
-    val state = remember { mutableStateOf(list[0]) }
+    val state = remember { mutableStateOf(listState.value) }
     var listExpanded by remember { mutableStateOf(false) }
 
     ExposedDropdownMenuBox(
@@ -147,7 +162,9 @@ fun DDMenu(list: List<Portrait>, listState: MutableState<Portrait>) {
             onValueChange = {},
             readOnly = true,
             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = listExpanded) },
-            modifier = Modifier.menuAnchor().fillMaxWidth()
+            modifier = Modifier
+                .menuAnchor()
+                .fillMaxWidth()
         )
         ExposedDropdownMenu(
             expanded = listExpanded,
@@ -168,9 +185,8 @@ fun DDMenu(list: List<Portrait>, listState: MutableState<Portrait>) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TopBar() {
+fun TopBar(clear: () -> Unit) {
     var menuExpanded by rememberSaveable { mutableStateOf(false) }
-    val context = LocalContext.current
 
     TopAppBar(
         title = { Text(text = "Фоторобот") },
@@ -184,7 +200,7 @@ fun TopBar() {
             ) {
                 DropdownMenuItem(
                     onClick = {
-                        Toast.makeText(context, "Нажал", Toast.LENGTH_LONG).show()
+                        clear()
                         menuExpanded = false
                     },
                     text = { Text("Очистить") }
