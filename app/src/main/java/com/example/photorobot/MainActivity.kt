@@ -1,6 +1,5 @@
 package com.example.photorobot
 
-import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -49,7 +48,6 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun PhotoRobot() {
     val face = listOf(
@@ -174,13 +172,13 @@ fun DDMenu(list: List<Portrait>, listState: MutableState<Portrait>) {
                     text = { Text(text = item.text) },
                     onClick = {
                         state.value = item
+                        listState.value = state.value
                         listExpanded = false
                     }
                 )
             }
         }
     }
-    listState.value = state.value
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
